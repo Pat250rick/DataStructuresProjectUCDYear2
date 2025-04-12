@@ -11,7 +11,7 @@ public  class Treap<E extends Comparable<E>> {
     public Treap(){};
 
     public Treap(E root){
-
+        insert(root);
     }
 
     public Treap(E [] arr){
@@ -113,11 +113,11 @@ public  class Treap<E extends Comparable<E>> {
     /* Bulk Operations */
 
     public void join(){
-
+        //TODO
     }
 
     public void split(){
-
+        //TODO
     }
 
     private Node<E> getNode(E value){
