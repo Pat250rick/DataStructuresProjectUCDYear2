@@ -4,9 +4,7 @@ public  class Treap<E extends Comparable<E>> {
 
     private Node<E> root = null;
 
-    /*
-
-     */
+    /* Treap Operations*/
 
     public Treap(){};
 
@@ -110,16 +108,6 @@ public  class Treap<E extends Comparable<E>> {
         }
     }
 
-    /* Bulk Operations */
-
-    public void join(){
-        //TODO
-    }
-
-    public void split(){
-        //TODO
-    }
-
     private Node<E> getNode(E value){
         Node<E> pointer = root;
 
@@ -135,6 +123,18 @@ public  class Treap<E extends Comparable<E>> {
             }
         }
     }
+
+    /* Bulk Operations */
+
+    public void join(){
+        //TODO
+    }
+
+    public void split(){
+        //TODO
+    }
+
+
 
     private static class Node<E> {
 
