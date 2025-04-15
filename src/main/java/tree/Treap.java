@@ -1,30 +1,30 @@
 import java.util.Random;
 
-public  class Treap<E extends Comparable<E>> {
+public  class Treap<K extends Comparable<K>, V> extends TreeMap<K, V> {
 
-    private Node<E> root = null;
+    private Node<K> root = null;
 
     /* Treap Operations*/
 
     public Treap(){};
 
-    public Treap(E root){
+    public Treap(K root){
         insert(root);
     }
 
-    public Treap(E [] arr){
-        for(E e : arr){
-            insert(e);
+    public Treap(K[] arr){
+        for(K k : arr){
+            insert(k);
         }
     }
 
     /* Element Operations */
 
-    public void insert(E value){
+    public void insert(K value){
         Random rand = new Random();
         int priority = rand.nextInt();
 
-        Node<E> pointer = root;
+        Node<K> pointer = root;
 
         if(pointer == null){
             root = new Node<>( value, priority, null, null, null );
@@ -49,12 +49,11 @@ public  class Treap<E extends Comparable<E>> {
                 rotateLeft(pointer);
             }
         }
-
     }
 
-    private void rotateLeft(Node<E> pointer){
-        Node<E> left = pointer.getLeft();
-        Node<E> parent = pointer.getParent();
+    private void rotateLeft(Node<K> pointer){
+        Node<K> left = pointer.getLeft();
+        Node<K> parent = pointer.getParent();
 
         pointer.setParent(parent.getParent());
         if(parent.getParent().getLeft() == parent){
@@ -70,9 +69,9 @@ public  class Treap<E extends Comparable<E>> {
         left.setParent(parent);
     }
 
-    private void rotateRight(Node<E> pointer){
-        Node<E> right = pointer.getRight();
-        Node<E> parent = pointer.getParent();
+    private void rotateRight(Node<K> pointer){
+        Node<K> right = pointer.getRight();
+        Node<K> parent = pointer.getParent();
 
         pointer.setParent(parent.getParent());
         if(parent.getParent().getLeft() == parent){
@@ -88,8 +87,8 @@ public  class Treap<E extends Comparable<E>> {
         right.setParent(parent);
     }
 
-    public void delete(E value){
-        Node<E> pointer = getNode(value);
+    public void delete(K value){
+        Node<K> pointer = getNode(value);
 
         if(pointer == null) return;
 
@@ -108,8 +107,8 @@ public  class Treap<E extends Comparable<E>> {
         }
     }
 
-    private Node<E> getNode(E value){
-        Node<E> pointer = root;
+    private Node<K> getNode(K value){
+        Node<K> pointer = root;
 
         while(true){
             if(pointer == null){
@@ -133,8 +132,6 @@ public  class Treap<E extends Comparable<E>> {
     public void split(){
         //TODO
     }
-
-
 
     private static class Node<E> {
 
