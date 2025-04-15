@@ -2,7 +2,6 @@ package tree;
 
 import interfaces.BinaryTree;
 import interfaces.Position;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

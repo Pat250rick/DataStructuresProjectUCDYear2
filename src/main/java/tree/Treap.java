@@ -1,3 +1,5 @@
+import tree.TreeMap;
+
 import java.util.Random;
 
 public  class Treap<K extends Comparable<K>, V> extends TreeMap<K, V> {
