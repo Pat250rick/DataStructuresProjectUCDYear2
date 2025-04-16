@@ -60,7 +60,7 @@ class AVLTreeMapTest {
 			map.put(i, Integer.toString(i));
 		}
 
-		System.out.println(map.tree.toBinaryTreeString());
+		//System.out.println(map.tree.toBinaryTreeString());
 
 		//assertEquals(12, map.size());
 		//assertEquals("26", map.remove(26));
@@ -70,7 +70,7 @@ class AVLTreeMapTest {
 
 		map.remove(53);
 
-		System.out.println(map.tree.toBinaryTreeString());
+		//System.out.println(map.tree.toBinaryTreeString());
 
 		assertEquals("[4, 7, 8, 11, 12, 13, 14, 17]", map.toString());
 
@@ -86,7 +86,7 @@ class AVLTreeMapTest {
 			map.put(i, Integer.toString(i));
 		}
 
-		System.out.println(map.tree.toBinaryTreeString());
+		//System.out.println(map.tree.toBinaryTreeString());
 
 		//assertEquals(12, map.size());
 		//assertEquals("26", map.remove(26));
@@ -96,7 +96,7 @@ class AVLTreeMapTest {
 
 		map.remove(53);
 
-		System.out.println(map.tree.toBinaryTreeString());
+		//System.out.println(map.tree.toBinaryTreeString());
 
 		assertEquals("[4, 7, 8, 11, 12, 13, 14, 17]", map.toString());
 

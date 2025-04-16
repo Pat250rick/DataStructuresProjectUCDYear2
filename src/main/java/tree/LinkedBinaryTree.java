@@ -152,15 +152,18 @@ public class LinkedBinaryTree<E extends Comparable<E>> implements BinaryTree<E> 
      * @param snapshot a list to which results are appended
      */
     private void preorderSubtree(Position<E> p, List<Position<E>> snapshot) {
-        if(p.getElement() != null){
-            snapshot.add(p);
+        if(p.getElement() == null){
+            return;
         }
+        snapshot.add(p);
         if (left(p) != null) {
             preorderSubtree(left(p), snapshot);
         }
+
         if (right(p) != null) {
             preorderSubtree(right(p), snapshot);
         }
+
     }
 
     /**

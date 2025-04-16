@@ -47,19 +47,34 @@ public class AVLTreeMap<K extends Comparable<K>, V> extends TreeMap<K, V> {
 	 * Recomputes the height of the given position based on its children's heights.
 	 */
 	protected void recomputeHeight(Position<Entry<K, V>> p) {
-		// TODO
+		Position<Entry<K, V>> left = tree.left(p);
+		Position<Entry<K, V>> right = tree.right(p);
+		// If a child is external (null element), its height is considered -1.
+		int leftHeight = (left.getElement() == null ? -1 : height(left));
+		int rightHeight = (right.getElement() == null ? -1 : height(right));
+		int newHeight = 1 + Math.max(leftHeight, rightHeight);
+		tree.setAux(p, newHeight);
 	}
 
 	/** Returns whether a position has balance factor between -1 and 1 inclusive. */
 	protected boolean isBalanced(Position<Entry<K, V>> p) {
-		// TODO
-		return false;
+		Position<Entry<K, V>> left = tree.left(p);
+		Position<Entry<K, V>> right = tree.right(p);
+		int leftHeight = (left.getElement() == null ? -1 : height(left));
+		int rightHeight = (right.getElement() == null ? -1 : height(right));
+		return Math.abs(leftHeight - rightHeight) <= 1;
 	}
 
 	/** Returns a child of p with height no smaller than that of the other child. */
 	protected Position<Entry<K, V>> tallerChild(Position<Entry<K, V>> p) {
-		// TODO
-		return null;
+		Position<Entry<K, V>> left = tree.left(p);
+		Position<Entry<K, V>> right = tree.right(p);
+		int leftHeight = (left.getElement() == null ? -1 : height(left));
+		int rightHeight = (right.getElement() == null ? -1 : height(right));
+		if (leftHeight >= rightHeight)
+			return left;
+		else
+			return right;
 	}
 
 	/**
@@ -68,20 +83,37 @@ public class AVLTreeMap<K extends Comparable<K>, V> extends TreeMap<K, V> {
 	 * imbalance is found, continuing until balance is restored.
 	 */
 	protected void rebalance(Position<Entry<K, V>> p) throws IOException {
-		// TODO
-
+		while (p != null) {
+			// Recompute the height at p.
+			recomputeHeight(p);
+			// If p is unbalanced, perform a restructure around its taller grandchild.
+			if (!isBalanced(p)) {
+				// Determine which child is taller.
+				Position<Entry<K, V>> child = tallerChild(p);
+				// And then which grandchild of p is taller (based on child).
+				Position<Entry<K, V>> grandchild = tallerChild(child);
+				// Perform restructure: trinode restructuring will rebalance the subtree.
+				p = restructure(grandchild);
+				// After restructuring, update the heights of the children of the new subtree root.
+				recomputeHeight(tree.left(p));
+				recomputeHeight(tree.right(p));
+				recomputeHeight(p);
+			}
+			// Move upward to the parent.
+			p = tree.parent(p);
+		}
 	}
 
 	/** Overrides the TreeMap rebalancing hook that is called after an insertion. */
 	@Override
 	protected void rebalanceInsert(Position<Entry<K, V>> p) throws IOException {
-		// TODO
+		rebalance(p);
 	}
 
 	/** Overrides the TreeMap rebalancing hook that is called after a deletion. */
 	@Override
 	protected void rebalanceDelete(Position<Entry<K, V>> p) throws IOException {
-		// TODO
+		rebalance(p);
 	}
 
 }

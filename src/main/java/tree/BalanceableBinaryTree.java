@@ -9,12 +9,14 @@ public class BalanceableBinaryTree<K, V> extends LinkedBinaryTree<Entry<K, V>> {
 
     // positional-based methods related to aux field
     public int getAux(Position<Entry<K, V>> p) {
-        BSTNode<Entry<K, V>> node = (BSTNode<Entry<K, V>>)validate(p);
+        Node<Entry<K, V>> node0 = validate(p);
+        BSTNode<Entry<K,V>> node = new BSTNode<>(p.getElement(),node0.getParent(),node0.getLeft(),node0.getRight());
         return node.getAux();
     }
 
     public void setAux(Position<Entry<K, V>> p, int value) {
-        BSTNode<Entry<K, V>> node = (BSTNode<Entry<K, V>>)validate(p);
+        Node<Entry<K, V>> node0 = validate(p);
+        BSTNode<Entry<K,V>> node = new BSTNode<>(p.getElement(),node0.getParent(),node0.getLeft(),node0.getRight());
         node.setAux(value);
     }
 
