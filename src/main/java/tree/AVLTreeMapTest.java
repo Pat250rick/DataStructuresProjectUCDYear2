@@ -39,6 +39,8 @@ class AVLTreeMapTest {
 		List<Integer> list = new ArrayList<>();
 		keys.forEachRemaining(list::add);
 
+		System.out.println(map.isBalanced(map.tree.root()));
+
 		assertEquals("[1, 2, 4, 5, 12, 15, 21, 23, 24, 26, 33, 35]", list.toString());
 		assertEquals("[1, 2, 4, 5, 12, 15, 21, 23, 24, 26, 33, 35]", map.tree.inorder().toString());
 		assertEquals("[15, 4, 1, 2, 12, 5, 26, 23, 21, 24, 35, 33]", map.tree.preorder().toString());
@@ -60,7 +62,7 @@ class AVLTreeMapTest {
 			map.put(i, Integer.toString(i));
 		}
 
-		//System.out.println(map.tree.toBinaryTreeString());
+		System.out.println(map.tree.toBinaryTreeString());
 
 		//assertEquals(12, map.size());
 		//assertEquals("26", map.remove(26));
@@ -70,7 +72,7 @@ class AVLTreeMapTest {
 
 		map.remove(53);
 
-		//System.out.println(map.tree.toBinaryTreeString());
+		System.out.println(map.tree.toBinaryTreeString());
 
 		assertEquals("[4, 7, 8, 11, 12, 13, 14, 17]", map.toString());
 
@@ -86,7 +88,7 @@ class AVLTreeMapTest {
 			map.put(i, Integer.toString(i));
 		}
 
-		//System.out.println(map.tree.toBinaryTreeString());
+		System.out.println(map.tree.toBinaryTreeString());
 
 		//assertEquals(12, map.size());
 		//assertEquals("26", map.remove(26));

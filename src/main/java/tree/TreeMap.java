@@ -228,9 +228,9 @@ public class TreeMap<K extends Comparable<K>, V> extends AbstractSortedMap<K, V>
 			tree.setRoot(sibling);
 		} else {
 			if (p == tree.left(parent))
-				tree.relink((LinkedBinaryTree.Node<Entry<K, V>>)tree.parent(p), (LinkedBinaryTree.Node<Entry<K, V>>)sibling, true);
+				tree.relink((BSTNode<Entry<K, V>>)tree.parent(p), (BSTNode<Entry<K, V>>)sibling, true);
 			else
-				tree.relink((LinkedBinaryTree.Node<Entry<K, V>>)tree.parent(p), (LinkedBinaryTree.Node<Entry<K, V>>)sibling, false);
+				tree.relink((BSTNode<Entry<K, V>>)tree.parent(p), (BSTNode<Entry<K, V>>)sibling, false);
 		}
 		// p becomes external
 		tree.set(p, null);

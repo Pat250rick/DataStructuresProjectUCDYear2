@@ -138,7 +138,7 @@ class TreeMapTest {
 			map.put(i, Integer.toString(i));
 		}
 
-		//System.out.println(map.toBinaryTreeString());
+		System.out.println(map.toBinaryTreeString());
 		assertEquals(23, map.lowerEntry(24).getKey());
 		assertEquals(26, map.lowerEntry(31).getKey());
 	}

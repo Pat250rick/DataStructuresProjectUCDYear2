@@ -9,27 +9,73 @@ public class BalanceableBinaryTree<K, V> extends LinkedBinaryTree<Entry<K, V>> {
 
     // positional-based methods related to aux field
     public int getAux(Position<Entry<K, V>> p) {
-        Node<Entry<K, V>> node0 = validate(p);
-        BSTNode<Entry<K,V>> node = new BSTNode<>(p.getElement(),node0.getParent(),node0.getLeft(),node0.getRight());
+        BSTNode<Entry<K, V>> node = (BSTNode<Entry<K, V>>)p;
         return node.getAux();
     }
 
     public void setAux(Position<Entry<K, V>> p, int value) {
-        Node<Entry<K, V>> node0 = validate(p);
-        BSTNode<Entry<K,V>> node = new BSTNode<>(p.getElement(),node0.getParent(),node0.getLeft(),node0.getRight());
+        BSTNode<Entry<K, V>> node = (BSTNode<Entry<K, V>>)p;
         node.setAux(value);
     }
 
-    // Override node factory function to produce a BSTNode (rather than a Node)
-    @Override
-    protected Node<Entry<K, V>> createNode(Entry<K, V> e, Node<Entry<K, V>> parent, Node<Entry<K, V>> left, Node<Entry<K, V>> right) {
+    public Position<Entry<K,V>> addRoot(Entry<K,V> e) throws IllegalStateException {
+        if (root != null) {
+            throw new IllegalStateException("Tree already has a root");
+        }
+        root = new BSTNode<>(e,null,null,null);
+        size++;
+        return root;
+    }
+
+    /**
+     * Creates a new left child of Position p storing element e and returns its
+     * Position.
+     *
+     * @param p the Position to the left of which the new element is inserted
+     * @param e the new element
+     * @return the Position of the new element
+     * @throws IllegalArgumentException if p is not a valid Position for this tree
+     * @throws IllegalArgumentException if p already has a left child
+     */
+    public Position<Entry<K,V>> addLeft(Position<Entry<K,V>> p, Entry<K,V> e) throws IllegalArgumentException {
+        if(left(p) != null){
+            throw new IllegalArgumentException("Position already has value.");
+        }else{
+            ((BSTNode<Entry<K,V>>) p).setLeft(new BSTNode<Entry<K,V>>(e, (BSTNode<Entry<K,V>>) p,null,null));
+            size++;
+        }
+        return left(p);
+    }
+
+    /**
+     * Creates a new right child of Position p storing element e and returns its
+     * Position.
+     *
+     * @param p the Position to the right of which the new element is inserted
+     * @param e the new element
+     * @return the Position of the new element
+     * @throws IllegalArgumentException if p is not a valid Position for this tree.
+     * @throws IllegalArgumentException if p already has a right child
+     */
+    public Position<Entry<K,V>> addRight(Position<Entry<K,V>> p, Entry<K,V> e) throws IllegalArgumentException {
+        if(right(p) != null){
+            throw new IllegalArgumentException("Position already has value.");
+        }else{
+            ((BSTNode<Entry<K,V>>) p).setRight(new BSTNode<Entry<K,V>>(e, (BSTNode<Entry<K,V>>) p,null,null));
+            size++;
+        }
+        return right(p);
+    }
+
+
+    protected BSTNode<Entry<K, V>> createNode(Entry<K, V> e, BSTNode<Entry<K, V>> parent, BSTNode<Entry<K, V>> left, BSTNode<Entry<K, V>> right) {
         return new BSTNode<>(e, parent, left, right);
     }
 
     /**
      * Relinks a parent node with its oriented child node.
      */
-    void relink(Node<Entry<K, V>> parent, Node<Entry<K, V>> child, boolean makeLeftChild) {
+    void relink(BSTNode<Entry<K, V>> parent, BSTNode<Entry<K, V>> child, boolean makeLeftChild) {
         if (makeLeftChild) {
             parent.setLeft(child);
         } else {
@@ -56,8 +102,8 @@ public class BalanceableBinaryTree<K, V> extends LinkedBinaryTree<Entry<K, V>> {
      */
     public void rotate(Position<Entry<K, V>> p) {
         // Validate p and retrieve its parent.
-        Node<Entry<K, V>> x = validate(p);
-        Node<Entry<K, V>> y = x.getParent();
+        BSTNode<Entry<K, V>> x = (BSTNode<Entry<K, V>>)validate(p);
+        BSTNode<Entry<K, V>> y = (BSTNode<Entry<K, V>>)x.getParent();
         if (y == null)
             throw new IllegalArgumentException("Cannot rotate the root");
 
@@ -66,11 +112,11 @@ public class BalanceableBinaryTree<K, V> extends LinkedBinaryTree<Entry<K, V>> {
         // Determine if x is a left or right child.
         if (x == y.getLeft()) {
             // Right rotation:
-            relink(y, x.getRight(), true); // t1 becomes y’s left subtree
+            relink(y, (BSTNode<Entry<K, V>>)x.getRight(), true); // t1 becomes y’s left subtree
             x.setRight(y);
         } else {
             // Left rotation:
-            relink(y, x.getLeft(), false); // t1 becomes y’s right subtree
+            relink(y, (BSTNode<Entry<K, V>>)x.getLeft(), false); // t1 becomes y’s right subtree
             x.setLeft(y);
         }
         // x becomes child of z (which might be null, meaning x is new root)
