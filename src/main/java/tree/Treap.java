@@ -42,7 +42,7 @@ public  class Treap<K extends Comparable<K>> extends TreeMap<K, Integer> {
         }
     }
 
-    public ArrayList<K> treapSort(K [] arr) throws IllegalArgumentException, IOException{
+    public ArrayList<K> treapSort(ArrayList<K> arr) throws IllegalArgumentException, IOException{
         Treap<K> map = new Treap<>();
 
         for(K k : arr)
