@@ -1,170 +1,60 @@
-import tree.TreeMap;
+package tree;
 
+import interfaces.Position;
+import interfaces.Entry;
+import org.junit.jupiter.api.Test;
+import tree.BalanceableBinaryTree.*;
+import utils.MapEntry;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 
-public  class Treap<K extends Comparable<K>, V> extends TreeMap<K, V> {
+public  class Treap<K extends Comparable<K>> extends TreeMap<K, Integer> {
+    Random rand;
 
-    private Node<K> root = null;
-
-    /* Treap Operations*/
-
-    public Treap(){};
-
-    public Treap(K root){
-        insert(root);
+    public Treap(){
+        super();
+        rand = new Random();
     }
 
-    public Treap(K[] arr){
-        for(K k : arr){
-            insert(k);
+    public Treap(Comparator<K> comp) {
+        super(comp);
+        rand = new Random();
+    }
+
+    public Treap(int a){
+        rand = new Random(a);
+    }
+
+    public Integer put(K key) throws IllegalArgumentException, IOException {
+        return super.put(key, rand.nextInt());
+    }
+
+    @Override
+    protected void rebalanceInsert(Position<Entry<K, Integer>> p) throws IOException {
+        BalanceableBinaryTree.BSTNode<Entry<K, Integer>> node = (BSTNode<Entry<K, Integer>>)p;
+
+        while(node.getParent() != null && node.getElement().getValue() > ((BSTNode<Entry<K, Integer>>)node.getParent()).getElement().getValue()){
+            rotate(p);
         }
     }
 
-    /* Element Operations */
+    public ArrayList<K> treapSort(K [] arr) throws IllegalArgumentException, IOException{
+        Treap<K> map = new Treap<>();
 
-    public void insert(K value){
-        Random rand = new Random();
-        int priority = rand.nextInt();
+        for(K k : arr)
+            map.put(k);
 
-        Node<K> pointer = root;
+        ArrayList<K> newArr = new ArrayList<>();
 
-        if(pointer == null){
-            root = new Node<>( value, priority, null, null, null );
-            return;
+        for(Position<Entry<K,Integer>> k : map.tree.inorder()){
+            newArr.add(k.getElement().getKey());
         }
 
-        while (pointer != null && value.compareTo(pointer.getValue()) < 0 && (pointer.getLeft() == null || pointer.getRight() == null)) {
-            if(value.compareTo(root.getValue()) > 0){
-                pointer = pointer.getLeft();
-            }else{
-                pointer = pointer.getRight();
-            }
-        }
-
-        pointer = new Node<>( value, priority, null, null, pointer );
-
-
-        while (pointer.parent != null && pointer.parent.priority < pointer.priority) {
-            if(pointer.parent.left == pointer){
-                rotateRight(pointer);
-            }else{
-                rotateLeft(pointer);
-            }
-        }
+        return newArr;
     }
 
-    private void rotateLeft(Node<K> pointer){
-        Node<K> left = pointer.getLeft();
-        Node<K> parent = pointer.getParent();
-
-        pointer.setParent(parent.getParent());
-        if(parent.getParent().getLeft() == parent){
-            pointer.getParent().setLeft(pointer);
-        }else{
-            pointer.getParent().setRight(pointer);
-        }
-
-        pointer.setLeft(parent);
-        parent.setParent(pointer);
-
-        parent.setRight(left);
-        left.setParent(parent);
-    }
-
-    private void rotateRight(Node<K> pointer){
-        Node<K> right = pointer.getRight();
-        Node<K> parent = pointer.getParent();
-
-        pointer.setParent(parent.getParent());
-        if(parent.getParent().getLeft() == parent){
-            pointer.getParent().setLeft(pointer);
-        }else{
-            pointer.getParent().setRight(pointer);
-        }
-
-        pointer.setRight(parent);
-        parent.setParent(pointer);
-
-        parent.setLeft(right);
-        right.setParent(parent);
-    }
-
-    public void delete(K value){
-        Node<K> pointer = getNode(value);
-
-        if(pointer == null) return;
-
-        while(pointer.getLeft() != null || pointer.getRight() != null){
-            if(pointer.getLeft() != null){
-                rotateRight(pointer.getLeft());
-            }else{
-                rotateLeft(pointer.getRight());
-            }
-        }
-
-        if(pointer.getParent().getLeft() == pointer){
-            pointer.getParent().setLeft(null);
-        }else{
-            pointer.getParent().setRight(null);
-        }
-    }
-
-    private Node<K> getNode(K value){
-        Node<K> pointer = root;
-
-        while(true){
-            if(pointer == null){
-                return null;
-            }else if(pointer.getValue().compareTo(value) == 0){
-                return pointer;
-            }else if(pointer.getValue().compareTo(value) < 0){
-                pointer = pointer.getLeft();
-            }else{
-                pointer = pointer.getRight();
-            }
-        }
-    }
-
-    /* Bulk Operations */
-
-    public void join(){
-        //TODO
-    }
-
-    public void split(){
-        //TODO
-    }
-
-    private static class Node<E> {
-
-        private int priority;
-        private E value;
-
-        private Node<E> left;
-        private Node<E> right;
-        private Node<E> parent;
-
-        public Node(E value, int priority, Node<E> left, Node<E> right, Node<E> parent){
-            this.value = value;
-            this.priority = priority;
-            this.left = left;
-            this.right = right;
-            this.parent = parent;
-        }
-
-        public void setPriority(int priority) {this.priority = priority;}
-        public int getPriority() {return priority;}
-
-        public void setLeft(Node<E> left){this.left = left;}
-        public Node<E> getLeft(){return left;}
-
-        public void setRight(Node<E> right){this.right = right;}
-        public Node<E> getRight(){return right;}
-
-        public void setParent(Node<E> parent) {this.parent = parent;}
-        public Node<E> getParent() {return parent;}
-
-        public void setValue(E value){this.value = value;}
-        public E getValue(){return value;}
-    }
 }

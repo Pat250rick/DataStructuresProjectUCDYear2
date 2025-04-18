@@ -80,7 +80,7 @@ public class TreeMap<K extends Comparable<K>, V> extends AbstractSortedMap<K, V>
 	}
 
 	/** Utility used when inserting a new entry at a leaf of the tree */
-	private void expandExternal(Position<Entry<K, V>> p, Entry<K, V> entry) {
+    protected void expandExternal(Position<Entry<K, V>> p, Entry<K, V> entry) {
 		// p must be external (i.e. p.getElement() is null)
 		if (p.getElement() != null)
 			throw new IllegalArgumentException("Position is not external");
@@ -105,7 +105,7 @@ public class TreeMap<K extends Comparable<K>, V> extends AbstractSortedMap<K, V>
 	 * @param p   a position of the tree serving as root of a subtree
 	 * @return Position holding key, or last node reached during search
 	 */
-	private Position<Entry<K, V>> treeSearch(Position<Entry<K, V>> p, K key) {
+    protected Position<Entry<K, V>> treeSearch(Position<Entry<K, V>> p, K key) {
 		if (p.getElement() == null) { // external node
 			return p;
 		}
