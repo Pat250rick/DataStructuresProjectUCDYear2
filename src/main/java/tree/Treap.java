@@ -42,19 +42,16 @@ public  class Treap<K extends Comparable<K>> extends TreeMap<K, Integer> {
         }
     }
 
-    public ArrayList<K> treapSort(ArrayList<K> arr) throws IllegalArgumentException, IOException{
+    public Iterable<Position<Entry<K,Integer>>> treapSort(ArrayList<K> arr) throws IllegalArgumentException, IOException{
         Treap<K> map = new Treap<>();
 
-        for(K k : arr)
-            map.put(k);
+        for(K k : arr) map.put(k);
 
         ArrayList<K> newArr = new ArrayList<>();
 
-        for(Position<Entry<K,Integer>> k : map.tree.inorder()){
-            newArr.add(k.getElement().getKey());
-        }
+        //for(Position<Entry<K,Integer>> k : map.tree.inorder()) newArr.add(k.getElement().getKey());
 
-        return newArr;
+        return map.tree.inorder();
     }
 
 }
