@@ -3,6 +3,7 @@ package tree;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import interfaces.Entry;
 
 public class TreePerformanceComparison {
 
@@ -104,14 +105,54 @@ public class TreePerformanceComparison {
         System.out.println("Search for Data of size " + size);
 
         // Successful search (search for the middle element)
-        long treapSuccessTime = benchmark(() -> treap.get(data.get(size / 2)));
-        long AVLTreeMapSuccessTime = benchmark(() -> AVLTreeMap.get(data.get(size / 2)));
-        long treeMapSuccessTime = benchmark(() -> treeMap.get(data.get(size / 2)));
+        long treapSuccessTime = benchmark(() -> {
+            try {
+                treap.get(data.get(size / 2));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        long AVLTreeMapSuccessTime = benchmark(() -> {
+            try {
+                AVLTreeMap.get(data.get(size / 2));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        long treeMapSuccessTime = benchmark(() -> {
+            try {
+                treeMap.get(data.get(size / 2));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
         // Unsuccessful search (search for a random element not in the data)
-        long treapFailTime = benchmark(() -> treap.get(size + 1));
-        long AVLTreeMapFailTime = benchmark(() -> AVLTreeMap.get(size + 1));
-        long treeMapFailTime = benchmark(() -> treeMap.get(size + 1));
+        long treapFailTime = benchmark(() -> {
+            try {
+                treap.get(size + 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        long AVLTreeMapFailTime = benchmark(() -> {
+            try {
+                AVLTreeMap.get(size + 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        long treeMapFailTime = benchmark(() -> {
+            try {
+                treeMap.get(size + 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
         // Write to CSV
         csvWriter.append("Search,Successful," + "Treap," + size + "," + treapSuccessTime + "\n");
@@ -168,35 +209,54 @@ public class TreePerformanceComparison {
 
     // Benchmark the in-order traversal time
     private static void benchmarkInOrderTraversal(Treap<Integer> treap, AVLTreeMap<Integer, Integer> AVLTreeMap,
-                                                  TreeMap<Integer, Integer> treeMap, ArrayList<Integer> data, int size, FileWriter csvWriter) {
+                                                  TreeMap<Integer, Integer> treeMap, ArrayList<Integer> data, int size, FileWriter csvWriter) throws IOException {
 
         System.out.println("In-order Traversal for Data of size " + size);
 
         // In-order traversal of Treap
+        // Assuming Treap extends TreeMap or has similar interface
         long treapTraversalTime = benchmark(() -> {
-            // Assuming Treap has an inOrder() method that returns an iterable collection of Entries
-            Iterable<Entry<Integer, Integer>> treapEntries = treap.inOrder();
-            for (Entry<Integer, Integer> entry : treapEntries) {
-                entry.getKey();  // Access the key
+            try {
+                // Using entrySet() which should perform an in-order traversal in TreeMap derivatives
+                for (Entry<Integer, Integer> entry : treap.entrySet()) {
+                    // Just access each element to ensure traversal
+                    Integer key = entry.getKey();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
 
         // In-order traversal of AVLTreeMap
         long AVLTreeMapTraversalTime = benchmark(() -> {
-            Iterable<Entry<Integer, Integer>> AVLTreeMapEntries = AVLTreeMap.inOrder();
-            for (Entry<Integer, Integer> entry : AVLTreeMapEntries) {
-                entry.getKey();  // Access the key
+            try {
+                // Using entrySet() which performs an in-order traversal in TreeMap
+                for (Entry<Integer, Integer> entry : AVLTreeMap.entrySet()) {
+                    // Just access each element to ensure traversal
+                    Integer key = entry.getKey();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
 
         // In-order traversal of TreeMap
         long treeMapTraversalTime = benchmark(() -> {
-            for (Map.Entry<Integer, Integer> entry : treeMap.entrySet()) {
-                entry.getKey();  // Access the key
+            try {
+                for (Entry<Integer, Integer> entry : treeMap.entrySet()) {
+                    // Just access each element to ensure traversal
+                    Integer key = entry.getKey();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
 
-        // Print results or write to CSV
+        // Write to CSV
+        csvWriter.append("InOrderTraversal," + "Treap," + size + "," + treapTraversalTime + "\n");
+        csvWriter.append("InOrderTraversal," + "AVLTreeMap," + size + "," + AVLTreeMapTraversalTime + "\n");
+        csvWriter.append("InOrderTraversal," + "TreeMap," + size + "," + treeMapTraversalTime + "\n");
+
         System.out.println("Treap In-order Traversal Time: " + treapTraversalTime + " ns");
         System.out.println("AVLTreeMap In-order Traversal Time: " + AVLTreeMapTraversalTime + " ns");
         System.out.println("TreeMap In-order Traversal Time: " + treeMapTraversalTime + " ns");
