@@ -39,7 +39,9 @@ public class BalanceableBinaryTree<K, V> extends LinkedBinaryTree<Entry<K, V>> {
      */
     public Position<Entry<K,V>> addLeft(Position<Entry<K,V>> p, Entry<K,V> e) throws IllegalArgumentException {
         if(left(p) != null){
-            throw new IllegalArgumentException("Position already has value.");
+            //throw new IllegalArgumentException("Position already has value.");
+            ((BSTNode<Entry<K,V>>) p).setLeft(new BSTNode<Entry<K,V>>(e, (BSTNode<Entry<K,V>>) p,null,null));
+            size++;
         }else{
             ((BSTNode<Entry<K,V>>) p).setLeft(new BSTNode<Entry<K,V>>(e, (BSTNode<Entry<K,V>>) p,null,null));
             size++;
@@ -59,7 +61,9 @@ public class BalanceableBinaryTree<K, V> extends LinkedBinaryTree<Entry<K, V>> {
      */
     public Position<Entry<K,V>> addRight(Position<Entry<K,V>> p, Entry<K,V> e) throws IllegalArgumentException {
         if(right(p) != null){
-            throw new IllegalArgumentException("Position already has value.");
+            //throw new IllegalArgumentException("Position already has value.");
+            ((BSTNode<Entry<K,V>>) p).setRight(new BSTNode<Entry<K,V>>(e, (BSTNode<Entry<K,V>>) p,null,null));
+            size++;
         }else{
             ((BSTNode<Entry<K,V>>) p).setRight(new BSTNode<Entry<K,V>>(e, (BSTNode<Entry<K,V>>) p,null,null));
             size++;

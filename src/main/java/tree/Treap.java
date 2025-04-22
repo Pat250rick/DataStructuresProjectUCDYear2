@@ -29,7 +29,6 @@ public class Treap<K extends Comparable<K>> extends TreeMap<K, Integer> {
         rand = new Random(a);
     }
 
-    @Override
     public Integer put(K key) throws IllegalArgumentException, IOException {
         return super.put(key, rand.nextInt());
     }
@@ -38,7 +37,7 @@ public class Treap<K extends Comparable<K>> extends TreeMap<K, Integer> {
     protected void rebalanceInsert(Position<Entry<K, Integer>> p) throws IOException {
         BalanceableBinaryTree.BSTNode<Entry<K, Integer>> node = (BSTNode<Entry<K, Integer>>) p;
 
-        while (node.getParent() != null && node.getElement().getValue() > ((BSTNode<Entry<K, Integer>>) node.getParent()).getElement().getValue()) {
+        while (node.getParent() != null && node.getParent().getElement() != null && node.getElement() != null && node.getElement().getValue() > ((BSTNode<Entry<K, Integer>>) node.getParent()).getElement().getValue()) {
             rotate(p);
         }
     }
