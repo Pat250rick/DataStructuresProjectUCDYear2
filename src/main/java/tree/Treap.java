@@ -38,17 +38,14 @@ public class Treap<K extends Comparable<K>> extends TreeMap<K, Integer> {
     protected void rebalanceInsert(Position<Entry<K, Integer>> p) throws IOException {
         BalanceableBinaryTree.BSTNode<Entry<K, Integer>> node = (BSTNode<Entry<K, Integer>>) p;
 
-        // Rebalance by comparing the node priority with its parent's priority
         while (node.getParent() != null && node.getElement().getValue() > ((BSTNode<Entry<K, Integer>>) node.getParent()).getElement().getValue()) {
-            rotate(p); // Rotate based on priority
+            rotate(p);
         }
     }
 
-    // Modified treapSort method to return Iterable<Position<Entry<K, Integer>>>
     public Iterable<Position<Entry<K, Integer>>> treapSort(ArrayList<K> arr) throws IllegalArgumentException, IOException {
         Treap<K> map = new Treap<>();
 
-        // Insert elements into the treap
         for (K k : arr) {
             map.put(k);
         }
