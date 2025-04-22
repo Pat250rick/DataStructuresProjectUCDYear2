@@ -1,78 +1,240 @@
 package tree;
 
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
+import java.util.*;
 
 public class TreePerformanceComparison {
+
     public static void main(String[] args) throws IOException {
-//        int [] sizes = new int[]{100};
-        int [] sizes = new int[]{10000,50000,100000,500000,1000000};
+        // Define the sizes to test with
+        int[] sizes = new int[]{100, 1000, 5000, 10000};
 
-        ArrayList<Integer> randomIntList = randomList(1000000);
-        ArrayList<Integer> sortedIntList = sortedList(1000000);
+        // Generate the test data
+        ArrayList<Integer> randomIntList = randomList(10000);
+        ArrayList<Integer> sortedIntList = sortedList(10000);
+        ArrayList<Integer> reverseSortedIntList = reverseSortedList(10000);
+        ArrayList<Integer> partiallySortedIntList = partiallySortedList(10000);
 
+        // Initialize the different tree structures
         Treap<Integer> treap = new Treap<>();
-        AVLTreeMap<Integer,Integer> AVLTreeMap = new AVLTreeMap<>();
-        TreeMap<Integer,Integer> treeMap = new TreeMap<>();
+        AVLTreeMap<Integer, Integer> AVLTreeMap = new AVLTreeMap<>();
+        TreeMap<Integer, Integer> treeMap = new TreeMap<>();
 
-        for(int i : sizes){
-            double randomTreapTime = benchmark(()->{for(int ix = 0; ix < i; ix++){try {treap.put(randomIntList.get(ix));} catch (IOException Ignored) {}}},5)/(double)(1e9);
-            double sortedTreapTime = benchmark(()->{for(int ix = 0; ix < i; ix++){try {treap.put(sortedIntList.get(ix));} catch (IOException Ignored) {}}},5)/(double)(1e9);
+        // Create CSV writer
+        FileWriter csvWriter = new FileWriter("tree_performance_comparison.csv");
+        // Write header row for the CSV
+        csvWriter.append("Operation,DataStructure,Size,Time(ns)\n");
 
-            double randomAVLTime = benchmark(()->{for(int ix = 0; ix < i; ix++){try {AVLTreeMap.put(randomIntList.get(ix),randomIntList.get(ix));} catch (IOException Ignored) {}}},5)/(double)(1e9);
-            double sortedAVLTime = benchmark(()->{for(int ix = 0; ix < i; ix++){try {AVLTreeMap.put(sortedIntList.get(ix),randomIntList.get(ix));} catch (IOException Ignored) {}}},5)/(double)(1e9);
+        // Measure performance for each size
+        for (int size : sizes) {
+            // Benchmark Insertions (Random & Sorted Data)
+            System.out.println("Size: " + size);
 
-            double randomTreeMapTime = benchmark(()->{for(int ix = 0; ix < i; ix++){try {treeMap.put(randomIntList.get(ix),randomIntList.get(ix));} catch (IOException Ignored) {}}},5)/(double)(1e9);
-            double sortedTreeMapTime = benchmark(()->{for(int ix = 0; ix < i; ix++){try {treeMap.put(sortedIntList.get(ix),randomIntList.get(ix));} catch (IOException Ignored) {}}},5)/(double)(1e9);
+            // Insert random data
+            benchmarkInsertion(treap, AVLTreeMap, treeMap, randomIntList, size, true, csvWriter);
+            benchmarkInsertion(treap, AVLTreeMap, treeMap, sortedIntList, size, false, csvWriter);
 
-            System.out.println(randomTreapTime + ", " + sortedTreapTime + ", " +  randomAVLTime + ", " +  sortedAVLTime + ", " +  randomTreeMapTime + ", " +  sortedTreeMapTime );
+            // Search tests (Successful and Unsuccessful)
+            benchmarkSearch(treap, AVLTreeMap, treeMap, randomIntList, size, csvWriter);
+            benchmarkSearch(treap, AVLTreeMap, treeMap, sortedIntList, size, csvWriter);
+
+            // Deletion tests
+            benchmarkDeletion(treap, AVLTreeMap, treeMap, randomIntList, size, csvWriter);
+            benchmarkDeletion(treap, AVLTreeMap, treeMap, sortedIntList, size, csvWriter);
+
+            // In-order Traversal tests
+            benchmarkInOrderTraversal(treap, AVLTreeMap, treeMap, randomIntList, size, csvWriter);
+            benchmarkInOrderTraversal(treap, AVLTreeMap, treeMap, sortedIntList, size, csvWriter);
         }
+
+        // Close the CSV writer
+        csvWriter.flush();
+        csvWriter.close();
     }
 
-    private static long benchmark(Runnable task){
+    // Benchmark the insertion time for single and batch insertion
+    private static void benchmarkInsertion(Treap<Integer> treap, AVLTreeMap<Integer, Integer> AVLTreeMap,
+                                           TreeMap<Integer, Integer> treeMap, ArrayList<Integer> data, int size, boolean isRandom,
+                                           FileWriter csvWriter) throws IOException {
+        System.out.println("Insertion for " + (isRandom ? "Random" : "Sorted") + " Data of size " + size);
 
-        return benchmark(task,1);
+        // Insert into Treap
+        long treapTime = benchmark(() -> {
+            for (int ix = 0; ix < size; ix++) {
+                try {
+                    treap.put(data.get(ix));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
+        // Insert into AVLTreeMap
+        long AVLTreeMapTime = benchmark(() -> {
+            for (int ix = 0; ix < size; ix++) {
+                try {
+                    AVLTreeMap.put(data.get(ix), data.get(ix));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        // Insert into TreeMap
+        long treeMapTime = benchmark(() -> {
+            for (int ix = 0; ix < size; ix++) {
+                try {
+                    treeMap.put(data.get(ix), data.get(ix));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        // Write to CSV
+        csvWriter.append("Insertion," + "Treap," + size + "," + treapTime + "\n");
+        csvWriter.append("Insertion," + "AVLTreeMap," + size + "," + AVLTreeMapTime + "\n");
+        csvWriter.append("Insertion," + "TreeMap," + size + "," + treeMapTime + "\n");
     }
-    private static long benchmark(Runnable task, int freq){
+
+    // Benchmark the search time for both successful and unsuccessful searches
+    private static void benchmarkSearch(Treap<Integer> treap, AVLTreeMap<Integer, Integer> AVLTreeMap,
+                                        TreeMap<Integer, Integer> treeMap, ArrayList<Integer> data, int size, FileWriter csvWriter) throws IOException {
+        System.out.println("Search for Data of size " + size);
+
+        // Successful search (search for the middle element)
+        long treapSuccessTime = benchmark(() -> treap.get(data.get(size / 2)));
+        long AVLTreeMapSuccessTime = benchmark(() -> AVLTreeMap.get(data.get(size / 2)));
+        long treeMapSuccessTime = benchmark(() -> treeMap.get(data.get(size / 2)));
+
+        // Unsuccessful search (search for a random element not in the data)
+        long treapFailTime = benchmark(() -> treap.get(size + 1));
+        long AVLTreeMapFailTime = benchmark(() -> AVLTreeMap.get(size + 1));
+        long treeMapFailTime = benchmark(() -> treeMap.get(size + 1));
+
+        // Write to CSV
+        csvWriter.append("Search,Successful," + "Treap," + size + "," + treapSuccessTime + "\n");
+        csvWriter.append("Search,Successful," + "AVLTreeMap," + size + "," + AVLTreeMapSuccessTime + "\n");
+        csvWriter.append("Search,Successful," + "TreeMap," + size + "," + treeMapSuccessTime + "\n");
+        csvWriter.append("Search,Unsuccessful," + "Treap," + size + "," + treapFailTime + "\n");
+        csvWriter.append("Search,Unsuccessful," + "AVLTreeMap," + size + "," + AVLTreeMapFailTime + "\n");
+        csvWriter.append("Search,Unsuccessful," + "TreeMap," + size + "," + treeMapFailTime + "\n");
+    }
+
+    // Benchmark the deletion time
+    private static void benchmarkDeletion(Treap<Integer> treap, AVLTreeMap<Integer, Integer> AVLTreeMap,
+                                          TreeMap<Integer, Integer> treeMap, ArrayList<Integer> data, int size, FileWriter csvWriter) throws IOException {
+        System.out.println("Deletion for Data of size " + size);
+
+        // Delete from Treap
+        long treapDelTime = benchmark(() -> {
+            for (int ix = 0; ix < size; ix++) {
+                try {
+                    treap.remove(data.get(ix));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        // Delete from AVLTreeMap
+        long AVLTreeMapDelTime = benchmark(() -> {
+            for (int ix = 0; ix < size; ix++) {
+                try {
+                    AVLTreeMap.remove(data.get(ix));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        // Delete from TreeMap
+        long treeMapDelTime = benchmark(() -> {
+            for (int ix = 0; ix < size; ix++) {
+                try {
+                    treeMap.remove(data.get(ix));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        // Write to CSV
+        csvWriter.append("Deletion," + "Treap," + size + "," + treapDelTime + "\n");
+        csvWriter.append("Deletion," + "AVLTreeMap," + size + "," + AVLTreeMapDelTime + "\n");
+        csvWriter.append("Deletion," + "TreeMap," + size + "," + treeMapDelTime + "\n");
+    }
+
+    // Benchmark the in-order traversal time
+    private static void benchmarkInOrderTraversal(Treap<Integer> treap, AVLTreeMap<Integer, Integer> AVLTreeMap,
+                                                  TreeMap<Integer, Integer> treeMap, ArrayList<Integer> data, int size, FileWriter csvWriter) {
+
+        System.out.println("In-order Traversal for Data of size " + size);
+
+        // In-order traversal of Treap
+        long treapTraversalTime = benchmark(() -> {
+            // Assuming Treap has an inOrder() method that returns an iterable collection of Entries
+            Iterable<Entry<Integer, Integer>> treapEntries = treap.inOrder();
+            for (Entry<Integer, Integer> entry : treapEntries) {
+                entry.getKey();  // Access the key
+            }
+        });
+
+        // In-order traversal of AVLTreeMap
+        long AVLTreeMapTraversalTime = benchmark(() -> {
+            Iterable<Entry<Integer, Integer>> AVLTreeMapEntries = AVLTreeMap.inOrder();
+            for (Entry<Integer, Integer> entry : AVLTreeMapEntries) {
+                entry.getKey();  // Access the key
+            }
+        });
+
+        // In-order traversal of TreeMap
+        long treeMapTraversalTime = benchmark(() -> {
+            for (Map.Entry<Integer, Integer> entry : treeMap.entrySet()) {
+                entry.getKey();  // Access the key
+            }
+        });
+
+        // Print results or write to CSV
+        System.out.println("Treap In-order Traversal Time: " + treapTraversalTime + " ns");
+        System.out.println("AVLTreeMap In-order Traversal Time: " + AVLTreeMapTraversalTime + " ns");
+        System.out.println("TreeMap In-order Traversal Time: " + treeMapTraversalTime + " ns");
+    }
+
+    // Benchmark helper function to measure execution time
+    private static long benchmark(Runnable task) {
         long start = System.nanoTime();
-        for(int i = 0; i < freq; i++){
-            task.run();
-        }
-        return (System.nanoTime() - start)/freq;
+        task.run();
+        return System.nanoTime() - start;
     }
 
-    private static ArrayList<Integer> randomList(int count){
+    // Helper functions to generate test data
+    private static ArrayList<Integer> randomList(int count) {
         Random rand = new Random();
-        ArrayList<Integer> l = new ArrayList<>();
-
-        for(int i = 0; i < count; i++){
-            l.add(rand.nextInt());
+        ArrayList<Integer> list = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            list.add(rand.nextInt());
         }
-
-        return l;
-    }
-    private static ArrayList<Integer> randomList(int count, int lower, int higher){
-        Random rand = new Random();
-        ArrayList<Integer> l = new ArrayList<>();
-
-        for(int i = 0; i < count; i++){
-            l.add(rand.nextInt(lower,higher));
-        }
-
-        return l;
+        return list;
     }
 
-    private static ArrayList<Integer> sortedList(int count){
-        ArrayList<Integer> l = randomList(count);
-        l.sort(Integer::compare);
-        return l;
+    private static ArrayList<Integer> sortedList(int count) {
+        ArrayList<Integer> list = randomList(count);
+        Collections.sort(list);
+        return list;
     }
-    private static ArrayList<Integer> sortedList(int count, int lower, int higher){
-        ArrayList<Integer> l = randomList(count, lower, higher);
-        l.sort(Integer::compare);
-        return l;
+
+    private static ArrayList<Integer> reverseSortedList(int count) {
+        ArrayList<Integer> list = sortedList(count);
+        Collections.reverse(list);
+        return list;
+    }
+
+    private static ArrayList<Integer> partiallySortedList(int count) {
+        ArrayList<Integer> list = randomList(count);
+        int half = count / 2;
+        Collections.sort(list.subList(0, half));
+        return list;
     }
 }

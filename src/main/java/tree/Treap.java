@@ -12,10 +12,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-public  class Treap<K extends Comparable<K>> extends TreeMap<K, Integer> {
+public class Treap<K extends Comparable<K>> extends TreeMap<K, Integer> {
     Random rand;
 
-    public Treap(){
+    public Treap() {
         super();
         rand = new Random();
     }
@@ -25,33 +25,42 @@ public  class Treap<K extends Comparable<K>> extends TreeMap<K, Integer> {
         rand = new Random();
     }
 
-    public Treap(int a){
+    public Treap(int a) {
         rand = new Random(a);
     }
 
+    @Override
     public Integer put(K key) throws IllegalArgumentException, IOException {
+        // Put the key with a random priority (value) and return the previous value if exists
         return super.put(key, rand.nextInt());
     }
 
     @Override
     protected void rebalanceInsert(Position<Entry<K, Integer>> p) throws IOException {
-        BalanceableBinaryTree.BSTNode<Entry<K, Integer>> node = (BSTNode<Entry<K, Integer>>)p;
+        BalanceableBinaryTree.BSTNode<Entry<K, Integer>> node = (BSTNode<Entry<K, Integer>>) p;
 
-        while(node.getParent() != null && node.getElement().getValue() > ((BSTNode<Entry<K, Integer>>)node.getParent()).getElement().getValue()){
-            rotate(p);
+        // Rebalance by comparing the node priority with its parent's priority
+        while (node.getParent() != null && node.getElement().getValue() > ((BSTNode<Entry<K, Integer>>) node.getParent()).getElement().getValue()) {
+            rotate(p); // Rotate based on priority
         }
     }
 
-    public Iterable<Position<Entry<K,Integer>>> treapSort(ArrayList<K> arr) throws IllegalArgumentException, IOException{
+    // Modified treapSort method to return Iterable<Position<Entry<K, Integer>>>
+    public Iterable<Position<Entry<K, Integer>>> treapSort(ArrayList<K> arr) throws IllegalArgumentException, IOException {
         Treap<K> map = new Treap<>();
 
-        for(K k : arr) map.put(k);
+        // Insert elements into the treap
+        for (K k : arr) {
+            map.put(k);
+        }
 
-        ArrayList<K> newArr = new ArrayList<>();
+        // Create a list to hold the sorted elements (in-order traversal)
+        List<Position<Entry<K, Integer>>> sortedPositions = new ArrayList<>();
+        for (Position<Entry<K, Integer>> pos : map.tree.inorder()) {
+            sortedPositions.add(pos);
+        }
 
-        //for(Position<Entry<K,Integer>> k : map.tree.inorder()) newArr.add(k.getElement().getKey());
-
-        return map.tree.inorder();
+        // Return the sorted positions
+        return sortedPositions;
     }
-
 }

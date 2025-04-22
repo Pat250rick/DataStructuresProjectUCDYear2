@@ -28,7 +28,11 @@ public interface Map<K, V> {
 	 * @param key the key whose associated value is to be returned
 	 * @return the associated value, or null if no such entry exists
 	 */
-	V get(K key) throws IOException;
+	@Override
+	public Integer put(K key, Integer value) throws IllegalArgumentException, IOException {
+		// Put the key with a random priority (value) and return the previous value if exists
+		return super.put(key, rand.nextInt()); // Use rand.nextInt() as the value to insert
+	}
 
 	/**
 	 * Associates the given value with the given key. If an entry with the key was
