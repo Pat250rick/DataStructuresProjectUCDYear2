@@ -31,7 +31,6 @@ public class Treap<K extends Comparable<K>> extends TreeMap<K, Integer> {
 
     @Override
     public Integer put(K key) throws IllegalArgumentException, IOException {
-        // Put the key with a random priority (value) and return the previous value if exists
         return super.put(key, rand.nextInt());
     }
 
