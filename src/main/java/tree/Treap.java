@@ -36,7 +36,7 @@ public class Treap<K extends Comparable<K>> extends TreeMap<K, Integer> {
     @Override
     protected void rebalanceInsert(Position<Entry<K, Integer>> p) throws IOException {
         BalanceableBinaryTree.BSTNode<Entry<K, Integer>> node = (BSTNode<Entry<K, Integer>>) p;
-
+        // Rebalances the tree until the nodes priority is greater than all nodes further done in the tree and less than all nodes higher in the tree
         while (node.getParent() != null && node.getParent().getElement() != null && node.getElement() != null && node.getElement().getValue() > ((BSTNode<Entry<K, Integer>>) node.getParent()).getElement().getValue()) {
             rotate(p);
         }
